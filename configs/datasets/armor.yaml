@@ -1,0 +1,5 @@
+path: ../../datasets/armor
+train: images/train
+val: images/val
+nc: 3
+names: [dead_armor, red_armor, blue_armor]

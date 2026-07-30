@@ -1,0 +1,14 @@
+camera:
+  acquisition_rate: 20.0
+  exposure_time: 10000
+  gain: 16.0
+  width: 4024
+  height: 3036
+  pixel_format: BayerRG8
+  camera_matrix: [1.0, 0.0, 0.0,
+                  0.0, 1.0, 0.0,
+                  0.0, 0.0, 1.0]
+  dist_coeffs: [0.0, 0.0, 0.0, 0.0, 0.0]
+  display_fps: false
+  recording_workers_num: 2
+  recording_save_root_dir: ./recordings

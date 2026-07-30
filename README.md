@@ -1,49 +1,109 @@
-# RM Radar Integrated Models
+# RM Radar Vision Framework
 
-面向 RoboMaster 雷达视觉的综合模型权重发布，包含车辆、装甲板、装甲板数字、无人机和激光模块识别模型。
+面向 RoboMaster 雷达站的视觉训练与部署代码框架，覆盖车辆、装甲板、装甲板数字、无人机和激光模块检测链路。
 
-本仓库只发布模型说明与 Release 权重包，**不包含训练集、验证集、图片或标签**。
+本项目中用于**车辆与装甲板标注、训练、识别和检测**的代码框架，参考并使用了香港科技大学 ENTERPRIZE 战队于 2025 年开源的 [RM2025 Radar Algorithm](https://github.com/hkustenterprize/RM2025-Radar-Algorithm) 项目。感谢原项目团队的开源贡献；相关代码保留原 MIT 版权与许可证声明。
 
-## 下载
+> **开源范围说明**
+>
+> 本项目仅开放代码框架，**不提供任何训练权重，数据集不公开**。使用者需要自行采集、筛选和标注数据，并从头训练适用于自身相机与赛场环境的模型。
 
-从 [v1.0.0 Release](https://github.com/hyris188/RM-Radar-Integrated-Models/releases/tag/v1.0.0) 下载：
+## 公开内容
 
-- [rm_radar_integrated_models-v1.0.0.tar.gz](https://github.com/hyris188/RM-Radar-Integrated-Models/releases/download/v1.0.0/rm_radar_integrated_models-v1.0.0.tar.gz)
-- [rm_radar_integrated_models-v1.0.0.tar.gz.sha256](https://github.com/hyris188/RM-Radar-Integrated-Models/releases/download/v1.0.0/rm_radar_integrated_models-v1.0.0.tar.gz.sha256)
+| 目录 | 内容 |
+| --- | --- |
+| `training/` | 通用 YOLO 训练入口、装甲板数字分类训练源码 |
+| `augmentation/` | 保持 YOLO 框同步的数据增强代码 |
+| `preprocessing/` | 视频抽帧、数据划分、标签检查与泄漏检查 |
+| `deployment/` | 雷达端海康相机综合推理与可视化代码 |
+| `driver/hik_camera/` | 海康 MVS 相机接入代码，不包含厂商 SDK 二进制 |
+| `configs/` | 车辆、装甲板、无人机、激光模块的数据和训练 YAML 模板 |
+| `docs/ANNOTATION_GUIDE.md` | 检测框、颜色、遮挡、负样本和关键点标注规范 |
 
-验证并解压：
+## 不公开内容
+
+- 所有训练完成的模型权重及备份，包括 `.pt`、`.pth`、`.onnx`、`.engine`、checkpoint；
+- 训练集、验证集、测试集、图片、视频及标签；
+- 本地训练输出、日志、缓存、相机标定结果和现场配置。
+
+仓库通过 `.gitignore` 排除上述内容。提交前仍应执行人工复核，禁止使用 `git add -f` 绕过限制。
+
+## 环境安装
 
 ```bash
-sha256sum -c rm_radar_integrated_models-v1.0.0.tar.gz.sha256
-tar -xzf rm_radar_integrated_models-v1.0.0.tar.gz
-cd rm_radar_integrated_models-v1.0.0
-sha256sum -c weights/SHA256SUMS
+git clone https://github.com/hyris188/RM-Radar-Vision-Framework.git
+cd RM-Radar-Vision-Framework
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-## 模型列表
+海康相机实时推理还需要单独安装 Hikrobot MVS SDK 和 ROS 2 Humble。厂商 SDK 不包含在本仓库中。
 
-| 文件 | 功能 | 格式 |
-| --- | --- | --- |
-| `car_detector_best.pt` | 车辆检测 | Ultralytics PyTorch |
-| `armor_detector_best.pt` | 装甲板检测与红蓝颜色分类 | Ultralytics PyTorch |
-| `armor_digit_classifier_best.pth` | 装甲板数字/兵种分类 | MobileNet PyTorch state dict |
-| `drone_detector_best.pt` | 无人机检测训练权重 | Ultralytics PyTorch |
-| `drone_detector_best.onnx` | 无人机检测部署权重 | ONNX |
-| `laser_module_pose_best.onnx` | 激光模块框与中心点检测 | ONNX Pose |
+## 准备自己的数据
 
-详细输入、类别、阈值、指标和限制见 [MODEL_CARD.md](MODEL_CARD.md)。许可证与第三方声明见 [LICENSE.md](LICENSE.md) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+数据目录约定如下，`datasets/` 已被 Git 忽略：
 
-## 推荐部署参数
+```text
+datasets/car/
+├── images/train/
+├── images/val/
+├── labels/train/
+└── labels/val/
+```
 
-- 无人机置信度阈值：`0.60`
-- 激光模块置信度阈值：`0.50`
-- 无人机和激光模块：每帧仅保留最高置信度的一个结果
-- ONNX Runtime：优先使用 CUDA Execution Provider
+其他任务使用相同结构。类别顺序和标注要求必须遵循 [标注规范](docs/ANNOTATION_GUIDE.md)。
 
-阈值和 `max_det=1` 是推理参数，不写入模型权重，使用者需要在自己的推理程序中设置。
+数据预处理示例：
 
-## 相关代码
+```bash
+python preprocessing/extract_video_frames.py \
+  --video /path/to/private_video.mp4 \
+  --output /path/to/private_frames
 
-基础雷达算法项目：<https://github.com/hkustenterprize/RM2025-Radar-Algorithm>
+python preprocessing/validate_yolo_dataset.py \
+  --dataset datasets/drone --classes 1
+```
 
-本模型包不承诺在比赛环境中零误检。使用前必须在实际相机、镜头、曝光和场地背景下重新验证。
+## 从头训练
+
+配置默认使用网络结构 YAML，不附带预训练权重：
+
+```bash
+python training/train_yolo.py --config configs/train/car.yaml
+python training/train_yolo.py --config configs/train/armor.yaml
+python training/train_yolo.py --config configs/train/drone.yaml
+python training/train_yolo.py --config configs/train/laser_module_pose.yaml
+```
+
+装甲板数字分类：
+
+```bash
+python -m training.train_digit_classifier \
+  --dataset-path datasets/digit \
+  --epochs 100
+```
+
+训练产生的权重只保存在本地 `runs/` 或 `weights/`，不得提交到本仓库。
+
+## 雷达端部署
+
+将自行训练得到的权重放在本地 `weights/`，复制并修改相机配置：
+
+```bash
+cp configs/deployment/device.example.yaml configs/deployment/device.local.yaml
+
+./run_integrated_realtime.sh \
+  --device-config configs/deployment/device.local.yaml \
+  --car-weights weights/car_detector.pt \
+  --armor-weights weights/armor_detector.pt \
+  --digit-weights weights/armor_digit_classifier.pth \
+  --drone-weights weights/drone_detector.onnx \
+  --laser-weights weights/laser_module_pose.onnx
+```
+
+部署代码仅提供流程参考。不同相机 Bayer 排列、曝光、分辨率和场地背景都需要现场重新验证。
+
+## 许可证
+
+本仓库代码保留原项目及第三方许可证声明，详见 [LICENSE.md](LICENSE.md) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

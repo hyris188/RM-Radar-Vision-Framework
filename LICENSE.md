@@ -1,11 +1,9 @@
 # License information
 
-This distribution does not replace or remove upstream license notices.
+This repository publishes source code only. It does not distribute trained weights or datasets.
 
-- Files derived from the HKUST ENTERPRIZE radar project retain its MIT notice.
-- PFA/YOLOv5-derived materials retain the GNU GPL v2 notice found in that upstream source tree.
-- Ultralytics-generated model artifacts retain the AGPL-3.0 notice recorded by Ultralytics and embedded in the ONNX metadata.
+- Code derived from the HKUST ENTERPRIZE radar project retains its MIT notice in `LICENSES/MIT-HKUST.txt`.
+- The training and inference examples depend on Ultralytics, which is distributed under terms described by Ultralytics. The AGPL-3.0 text shipped with the tested package is retained in `LICENSES/AGPL-3.0-Ultralytics.txt`.
+- The proprietary Hikrobot MVS SDK and its shared libraries are not distributed here. Users must obtain them from Hikrobot and comply with the vendor's terms.
 
-The corresponding full license texts are provided in `LICENSES/`. No training dataset is distributed. Dataset access rights are not granted by this model release.
-
-Before redistributing or using the weights commercially, users should review all applicable upstream terms. This file is an attribution and packaging notice, not legal advice.
+Third-party notices are not removed or replaced. This summary is not legal advice.
