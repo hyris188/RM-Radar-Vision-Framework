@@ -6,10 +6,10 @@
 
 ## 下载
 
-从本仓库的 **Releases** 页面下载：
+从 [v1.0.0 Release](https://github.com/hyris188/RM-Radar-Integrated-Models/releases/tag/v1.0.0) 下载：
 
-- `rm_radar_integrated_models-v1.0.0.tar.gz`
-- `rm_radar_integrated_models-v1.0.0.tar.gz.sha256`
+- [rm_radar_integrated_models-v1.0.0.tar.gz](https://github.com/hyris188/RM-Radar-Integrated-Models/releases/download/v1.0.0/rm_radar_integrated_models-v1.0.0.tar.gz)
+- [rm_radar_integrated_models-v1.0.0.tar.gz.sha256](https://github.com/hyris188/RM-Radar-Integrated-Models/releases/download/v1.0.0/rm_radar_integrated_models-v1.0.0.tar.gz.sha256)
 
 验证并解压：
 
