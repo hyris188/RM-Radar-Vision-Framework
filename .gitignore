@@ -1,0 +1,13 @@
+*.pt
+*.pth
+*.onnx
+*.engine
+*.tar
+*.tar.gz
+*.zip
+dataset*/
+data*/
+runs/
+logs/
+.venv/
+__pycache__/
